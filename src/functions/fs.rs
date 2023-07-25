@@ -8,6 +8,10 @@ pub struct Password {
     username: String,
     password: String,
 }
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Config {
+    string: String,
+}
 pub fn read_password() -> Vec<Password> {
     let passwords = fs::read_to_string("./passwords.json").expect("Error reading password");
     let password_vec: Vec<Password> = serde_json::from_str(&passwords).unwrap();
@@ -16,7 +20,7 @@ pub fn read_password() -> Vec<Password> {
 }
 
 pub fn save_password() {
-    let exists = exists();
+    let exists = exists("./passwords.json");
     let name = input("name");
     let username = input("username/email");
     let password = input("Password");
@@ -42,7 +46,7 @@ pub fn save_password() {
     fs::write("./passwords.json", contents).expect("Error");
 }
 pub fn passwords() {
-    if !exists() {
+    if !exists("./passwords.json") {
         return println!("There are no passwords");
     }
 
@@ -54,7 +58,15 @@ pub fn passwords() {
         println!("{}", pass)
     }
 }
-pub fn exists() -> bool {
-    let exists = Path::new("./passwords.json").exists();
+pub fn config() -> String {
+    if !exists("./config.json") {
+        return "1".to_string();
+    }
+    let cfg = fs::read_to_string("./config.json").expect("Error reading config file");
+    let c: Config = serde_json::from_str(&cfg).unwrap();
+    c.string
+}
+pub fn exists(path: &str) -> bool {
+    let exists = Path::new(path).exists();
     exists
 }
