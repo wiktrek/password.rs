@@ -17,7 +17,7 @@ pub fn check_option() {
 
     match option {
         0 => save_password(),
-        1 => println!("{}", read_password()),
+        1 => println!("{:?}", read_password()),
         _ => println!("Error"),
     }
 }
