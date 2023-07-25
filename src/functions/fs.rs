@@ -1,9 +1,11 @@
 use super::input;
 use serde::{Deserialize, Serialize};
 use std::fs;
+use std::path::Path;
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Password {
     name: String,
+    username: String,
     password: String,
 }
 pub fn read_password() -> Vec<Password> {
@@ -14,11 +16,45 @@ pub fn read_password() -> Vec<Password> {
 }
 
 pub fn save_password() {
-    let name = input("username/email");
+    let exists = exists();
+    let name = input("name");
+    let username = input("username/email");
     let password = input("Password");
+
+    if !exists {
+        let contents = serde_json::to_string(&vec![Password {
+            name,
+            username,
+            password,
+        }])
+        .expect("Error");
+        fs::write("./passwords.json", &contents).expect("Error");
+        return println!("{:?}", contents);
+    }
     let mut passwords = read_password();
-    passwords.push(Password { name, password });
+    passwords.push(Password {
+        name,
+        username,
+        password,
+    });
+
     let contents = serde_json::to_string(&passwords).unwrap();
     fs::write("./passwords.json", contents).expect("Error");
-    println!("{:?}", passwords)
+}
+pub fn passwords() {
+    if !exists() {
+        return println!("There are no passwords");
+    }
+
+    for a in read_password() {
+        let pass = format!(
+            "\n   {}\nusername:{}\npassword:{}",
+            a.name, a.username, a.password
+        );
+        println!("{}", pass)
+    }
+}
+pub fn exists() -> bool {
+    let exists = Path::new("./passwords.json").exists();
+    exists
 }
