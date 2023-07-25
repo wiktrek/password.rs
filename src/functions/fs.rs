@@ -14,14 +14,23 @@ pub struct Config {
     pub path: String,
 }
 pub fn read_password() -> Vec<Password> {
-    let passwords = fs::read_to_string("./passwords.json").expect("Error reading password");
+    let cfg = config();
+    if !exists(&cfg.path) {
+        return vec![Password {
+            name: "There are no passwords".to_string(),
+            username: " ".to_string(),
+            password: " ".to_string(),
+        }];
+    }
+    let passwords = fs::read_to_string(cfg.path).expect("Error reading password");
     let password_vec: Vec<Password> = serde_json::from_str(&passwords).unwrap();
 
     password_vec
 }
 
 pub fn save_password() {
-    let exists = exists("./passwords.json");
+    let cfg = config();
+    let exists = exists(&cfg.string);
     let name = input("name");
     let username = input("username/email");
     let password = input("Password");
@@ -33,7 +42,7 @@ pub fn save_password() {
             password,
         }])
         .expect("Error");
-        fs::write("./passwords.json", &contents).expect("Error");
+        fs::write(cfg.path, &contents).expect("Error");
         return println!("{:?}", contents);
     }
     let mut passwords = read_password();
@@ -44,10 +53,11 @@ pub fn save_password() {
     });
 
     let contents = serde_json::to_string(&passwords).unwrap();
-    fs::write("./passwords.json", contents).expect("Error");
+    fs::write(cfg.path, contents).expect("Error");
 }
 pub fn passwords() {
-    if !exists("./passwords.json") {
+    let cfg = config();
+    if !exists(&cfg.path) {
         return println!("There are no passwords");
     }
 
