@@ -1,3 +1,4 @@
 {
-  "string": "string"
+  "string": "string",
+  "path": "./passwords.json"
 }

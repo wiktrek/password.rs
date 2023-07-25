@@ -10,7 +10,8 @@ pub struct Password {
 }
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
-    string: String,
+    pub string: String,
+    pub path: String,
 }
 pub fn read_password() -> Vec<Password> {
     let passwords = fs::read_to_string("./passwords.json").expect("Error reading password");
@@ -58,13 +59,16 @@ pub fn passwords() {
         println!("{}", pass)
     }
 }
-pub fn config() -> String {
+pub fn config() -> Config {
     if !exists("./config.json") {
-        return "1".to_string();
+        return Config {
+            string: "string".to_string(),
+            path: "./passwords.json".to_string(),
+        };
     }
     let cfg = fs::read_to_string("./config.json").expect("Error reading config file");
     let c: Config = serde_json::from_str(&cfg).unwrap();
-    c.string
+    c
 }
 pub fn exists(path: &str) -> bool {
     let exists = Path::new(path).exists();

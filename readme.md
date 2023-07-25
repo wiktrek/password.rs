@@ -13,5 +13,6 @@ cargo run
 - [x] read passwords
 - [x] save password
 - [ ] custom path
-- [ ] hash passwords
+- [ ] encrypt passwords
+- [ ] decrypt passwords
 - [ ] notes
