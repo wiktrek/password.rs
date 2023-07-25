@@ -46,10 +46,10 @@ pub fn passwords() {
         return println!("There are no passwords");
     }
 
-    for a in read_password() {
+    for data in read_password() {
         let pass = format!(
             "\n   {}\nusername:{}\npassword:{}",
-            a.name, a.username, a.password
+            data.name, data.username, data.password
         );
         println!("{}", pass)
     }
