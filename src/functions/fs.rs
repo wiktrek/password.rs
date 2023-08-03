@@ -1,4 +1,5 @@
 use super::input;
+use super::{decrypt, encrypt, read_config};
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
@@ -8,29 +9,17 @@ pub struct Password {
     username: String,
     password: String,
 }
-#[derive(Debug, Serialize, Deserialize)]
-pub struct Config {
-    pub string: String,
-    pub path: String,
-}
 pub fn read_password() -> Vec<Password> {
-    let cfg = config();
-    if !exists(&cfg.path) {
-        return vec![Password {
-            name: "There are no passwords".to_string(),
-            username: " ".to_string(),
-            password: " ".to_string(),
-        }];
-    }
-    let passwords = fs::read_to_string(cfg.path).expect("Error reading password");
+    let path = read_config().path;
+    let passwords = fs::read_to_string(path).expect("Error reading password");
     let password_vec: Vec<Password> = serde_json::from_str(&passwords).unwrap();
 
     password_vec
 }
 
 pub fn save_password() {
-    let cfg = config();
-    let exists = exists(&cfg.string);
+    let path = read_config().path;
+    let exists = exists(path);
     let name = input("name");
     let username = input("username/email");
     let password = input("Password");
@@ -38,49 +27,41 @@ pub fn save_password() {
     if !exists {
         let contents = serde_json::to_string(&vec![Password {
             name,
-            username,
-            password,
+            username: encrypt(username),
+            password: encrypt(password),
         }])
         .expect("Error");
-        fs::write(cfg.path, &contents).expect("Error");
+        fs::write("./passwords.json", &contents).expect("Error");
         return println!("{:?}", contents);
     }
+
     let mut passwords = read_password();
     passwords.push(Password {
         name,
-        username,
-        password,
+        username: encrypt(username),
+        password: encrypt(password),
     });
 
     let contents = serde_json::to_string(&passwords).unwrap();
-    fs::write(cfg.path, contents).expect("Error");
+    fs::write("./passwords.json", contents).expect("Error");
 }
 pub fn passwords() {
-    let cfg = config();
-    if !exists(&cfg.path) {
+    let path = read_config().path;
+    if !exists(path) {
         return println!("There are no passwords");
     }
 
     for data in read_password() {
         let pass = format!(
             "\n   {}\nusername:{}\npassword:{}",
-            data.name, data.username, data.password
+            data.name,
+            decrypt(data.username),
+            decrypt(data.password)
         );
         println!("{}", pass)
     }
 }
-pub fn config() -> Config {
-    if !exists("./config.json") {
-        return Config {
-            string: "string".to_string(),
-            path: "./passwords.json".to_string(),
-        };
-    }
-    let cfg = fs::read_to_string("./config.json").expect("Error reading config file");
-    let c: Config = serde_json::from_str(&cfg).unwrap();
-    c
-}
-pub fn exists(path: &str) -> bool {
-    let exists = Path::new(path).exists();
+pub fn exists(path: String) -> bool {
+    let exists = Path::new(&path).exists();
     exists
 }

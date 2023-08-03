@@ -1,6 +1,8 @@
+mod config;
+mod encrypt;
 mod fs;
-mod hash;
 mod select_menu;
+pub use config::*;
+pub use encrypt::*;
 pub use fs::*;
-pub use hash::hash_password;
 pub use select_menu::*;

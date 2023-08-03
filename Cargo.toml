@@ -10,3 +10,5 @@ serde_json = "1.0.103"
 tokio = { version = "1.29.1", features = ["full"] }
 dialoguer = {version = "0.10.4", features = ["fuzzy-select"]}
 serde = { version = "1.0.175", features = ["derive"] }
+rand = "0.8.5"
+magic-crypt = "3.1.12"
