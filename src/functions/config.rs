@@ -23,7 +23,5 @@ pub fn read_config() -> Config {
     cfg
 }
 pub fn random() -> String {
-    let string = Alphanumeric.sample_string(&mut rand::thread_rng(), 64);
-    println!("{}", string);
-    string
+    Alphanumeric.sample_string(&mut rand::thread_rng(), 256)
 }
