@@ -1,8 +1,10 @@
 mod config;
 mod encrypt;
-mod fs;
+mod note;
+mod password;
 mod select_menu;
 pub use config::*;
 pub use encrypt::*;
-pub use fs::*;
+pub use note::*;
+pub use password::*;
 pub use select_menu::*;

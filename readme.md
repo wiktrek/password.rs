@@ -15,4 +15,5 @@ cargo run
 - [x] custom path
 - [x] encrypt passwords
 - [x] decrypt passwords
+- [ ] search for password
 - [ ] notes
