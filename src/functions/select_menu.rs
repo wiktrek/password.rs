@@ -2,8 +2,7 @@ use dialoguer::{theme::ColorfulTheme, FuzzySelect, Input};
 
 use super::{add_note, passwords, read_note, save_password};
 
-fn menu() -> usize {
-    let options = vec!["passwords", "add password", "add note", "read note"];
+fn menu(options: Vec<&str>) -> usize {
     let menu: usize = FuzzySelect::with_theme(&ColorfulTheme::default())
         .with_prompt("Select an option")
         .default(0)
@@ -13,7 +12,7 @@ fn menu() -> usize {
     menu
 }
 pub fn check_option() {
-    let option = menu();
+    let option = menu(vec!["passwords", "add password", "add note", "read note"]);
 
     match option {
         0 => passwords(),
