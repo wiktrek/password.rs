@@ -1,5 +1,7 @@
 use super::input;
 use super::{decrypt, encrypt, read_config};
+use dialoguer::theme::ColorfulTheme;
+use dialoguer::FuzzySelect;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
@@ -50,16 +52,31 @@ pub fn passwords() {
     if !exists(path) {
         return println!("There are no passwords");
     }
-
+    let passwords = read_password();
+    let mut names: Vec<String> = vec![];
     for data in read_password() {
-        let pass = format!(
-            "\n   {}\nusername:{}\npassword:{}",
-            data.name,
-            decrypt(data.username),
-            decrypt(data.password)
-        );
-        println!("{}", pass)
+        names.push(data.name)
     }
+    let menu: usize = FuzzySelect::with_theme(&ColorfulTheme::default())
+        .with_prompt("Select an option")
+        .default(0)
+        .items(&names)
+        .interact()
+        .unwrap();
+    println!(
+        "\nusername:{}\npassword:{}",
+        decrypt(&passwords[menu].username),
+        decrypt(&passwords[menu].password)
+    );
+    // for data in read_password() {
+    //     let pass = format!(
+    //         "\n   {}\nusername:{}\npassword:{}",
+    //         data.name,
+    //         decrypt(data.username),
+    //         decrypt(data.password)
+    //     );
+    //     println!("{}", pass)
+    // }
 }
 pub fn exists(path: String) -> bool {
     let exists = Path::new(&path).exists();
