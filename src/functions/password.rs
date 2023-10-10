@@ -21,19 +21,22 @@ pub fn read_password() -> Vec<Password> {
 
 pub fn save_password() {
     let path = read_config().path;
-    let exists = exists(path);
+    let config_exists = exists(path);
     let name = input("name");
     let username = input("username/email");
     let password = input("Password");
 
-    if !exists {
+    if !config_exists {
         let contents = serde_json::to_string(&vec![Password {
             name,
             username: encrypt(username),
             password: encrypt(password),
         }])
         .expect("Error");
-        fs::write("./passwords.json", &contents).expect("Error");
+        if !exists("./config".to_string()) {
+            fs::create_dir("./config").expect("Error");
+        }
+        fs::write("./config/passwords.json", &contents).expect("Error");
         return println!("{:?}", contents);
     }
 
@@ -45,7 +48,7 @@ pub fn save_password() {
     });
 
     let contents = serde_json::to_string(&passwords).unwrap();
-    fs::write("./passwords.json", contents).expect("Error");
+    fs::write("./config/passwords.json", contents).expect("Error");
 }
 pub fn passwords() {
     let path = read_config().path;

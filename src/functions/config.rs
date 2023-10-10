@@ -8,9 +8,12 @@ pub struct Config {
     pub path: String,
 }
 pub fn read_config() -> Config {
-    if !exists("./config.json".to_string()) {
+    if !exists("./config/config.json".to_string()) {
+        if !exists("./config".to_string()) {
+            fs::create_dir("./config").expect("Error");
+        }
         fs::write(
-            "./config.json",
+            "./config/config.json",
             format!(
                 "{{ \"key\": \"{}\",\n\"path\": \"./passwords.json\"}}",
                 random()
@@ -18,7 +21,8 @@ pub fn read_config() -> Config {
         )
         .expect("error writing file");
     }
-    let config: String = fs::read_to_string("./config.json").expect("Unable to read config file");
+    let config: String =
+        fs::read_to_string("./config/config.json").expect("Unable to read config file");
     let cfg: Config = serde_json::from_str(&config).unwrap();
     cfg
 }
